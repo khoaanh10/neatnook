@@ -55,3 +55,23 @@
 - **Cổng quyết định (Ngày 45–60)**:
   - **GO (Đăng ký Amazon Associates)**: Đạt ≥ 20–30 Outbound Clicks/ngày hoặc ≥ 30.000 Impressions/tháng đang tăng đều.
   - **PIVOT (Điều chỉnh ngách/thiết kế Pin)**: Nếu sau 60 ngày và > 250 Pin mà Impressions < 5.000/tháng → đổi bộ template Pin & từ khóa ngách.
+
+---
+
+## 4. Lộ trình xếp chồng 5 nguồn doanh thu (Revenue Stacking)
+
+Không ôm hết cùng lúc — mở dần từng tầng khi đạt đúng mốc traffic:
+
+1. **Tầng 1 — Affiliate cơ bản (Mốc ≥ 20–30 click/ngày, Tháng 2–3)**:
+   - Mua tên miền `.com` (~\$10/năm) + bật `"showDomainOnPins": true`.
+   - Đăng ký **Amazon Associates Mỹ** + **Payoneer** (rút USD về ngân hàng VN).
+2. **Tầng 2 — Quảng cáo hiển thị (Display Ads)**:
+   - Gắn **Google AdSense** ngay khi có `.com` + ≥ 20 bài (~2–6 USD / 1.000 lượt xem).
+   - Khi đạt **≥ 10.000 phiên/tháng** → nâng cấp lên **Journey by Mediavine** (RPM ngách Home Mỹ ~15–30 USD / 1.000 lượt xem).
+3. **Tầng 3 — Mạng Affiliate biên cao hơn (Tháng 3–4)**:
+   - Đăng ký qua **Impact.com / Awin / CJ Affiliate** để gắn thêm **Wayfair, Target, The Container Store, Etsy** (đơn \$100–\$400, hoa hồng 5–10%).
+4. **Tầng 4 — Sản phẩm số PDF \$7–\$12 (Tháng 4+)**:
+   - AI tạo bộ **Printable Pantry/Fridge Labels + 30-Day Home Reset Checklist** bán qua **Lemon Squeezy / Gumroad** ngay trong các bài viết liên quan (biên lợi nhuận ~95%).
+5. **Tầng 5 — Gom Email & Mở rộng kênh traffic miễn phí (Tháng 4–6)**:
+   - Tặng checklist miễn phí để gom danh sách email → gửi bản tin tuần tự động qua **beehiiv** (ăn thêm affiliate + beehiiv Ad Network).
+   - Khai thác thêm **Google SEO** (`sitemap.xml` + FAQ sẵn có), **Flipboard**, và **Facebook Page tiếng Anh**.
