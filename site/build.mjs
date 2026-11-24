@@ -30,13 +30,19 @@ const buildAmazonUrl = (item) => {
 const basePath = (config.basePath || '').replace(/\/$/, '');
 const withBase = (p) => `${basePath}${p.startsWith('/') ? p : '/' + p}`;
 
-const findPostImage = (slug) => {
-  if (!fs.existsSync(bgDir)) return null;
-  for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
-    const p = path.join(bgDir, `${slug}${ext}`);
-    if (fs.existsSync(p)) return { src: p, filename: `${slug}${ext}` };
+const findPostImages = (slug) => {
+  if (!fs.existsSync(bgDir)) return [];
+  const list = [];
+  for (const suffix of ['', '-2', '-3']) {
+    for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
+      const p = path.join(bgDir, `${slug}${suffix}${ext}`);
+      if (fs.existsSync(p)) {
+        list.push({ src: p, filename: `${slug}${suffix}${ext}` });
+        break;
+      }
+    }
   }
-  return null;
+  return list;
 };
 
 const layout = ({ title, description, canonicalPath = '/', body, ogType = 'website', ogImage = '' }) => {
@@ -62,16 +68,19 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <meta property="og:description" content="${esc(description || config.description)}">
   <meta property="og:url" content="${esc(canonical)}">
   <meta property="og:site_name" content="${esc(config.siteName)}">${ogImgMeta}${pinterestMeta}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${esc(withBase('/styles.css'))}">
 </head>
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="${esc(withBase('/'))}">${esc(config.siteName.slice(0, 4))}<span>${esc(config.siteName.slice(4))}</span></a>
+      <a class="brand" href="${esc(withBase('/'))}">Neat<span>Nook</span></a>
       <nav class="main-nav">
         <a href="${esc(withBase('/'))}">All Guides</a>
         <a href="${esc(withBase('/about/'))}">About</a>
-        <a href="${esc(withBase('/disclosure/'))}">Affiliate Disclosure</a>
+        <a href="${esc(withBase('/disclosure/'))}">Disclosure</a>
         <a href="${esc(withBase('/privacy/'))}">Privacy</a>
       </nav>
     </div>
@@ -83,43 +92,54 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
     <div class="wrap">
       <div class="footer-links">
         <a href="${esc(withBase('/'))}">Home</a>
-        <a href="${esc(withBase('/about/'))}">About</a>
+        <a href="${esc(withBase('/about/'))}">About NeatNook</a>
         <a href="${esc(withBase('/disclosure/'))}">Affiliate Disclosure</a>
         <a href="${esc(withBase('/privacy/'))}">Privacy Policy</a>
       </div>
       <p>${esc(config.disclosureShort)}</p>
-      <p>&copy; ${new Date().getFullYear()} ${esc(config.siteName)}. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} ${esc(config.siteName)}. Small-space living &amp; practical home organization.</p>
     </div>
   </footer>
 </body>
 </html>`;
 };
 
-const renderPost = (post) => {
+const renderPost = (post, allPosts) => {
   const tocItems = post.items
     .map((item, idx) => `<li><a href="#pick-${idx + 1}">${esc(item.name)}</a></li>`)
     .join('\n');
 
-  const pickCards = post.items
+  const extraImgs = post._extraImages || [];
+
+  const pickSections = post.items
     .map((item, idx) => {
+      const num = String(idx + 1).padStart(2, '0');
       const bullets = (item.highlights || []).map((b) => `<li>${esc(b)}</li>`).join('\n');
       const url = buildAmazonUrl(item);
-      return `<section class="pick-card" id="pick-${idx + 1}">
-        <div class="pick-top">
-          <span class="pick-num">Pick #${idx + 1}</span>
-          ${item.badge ? `<span class="pick-tag">${esc(item.badge)}</span>` : ''}
+
+      let inlineBreak = '';
+      if (idx === 2 && extraImgs[0]) {
+        inlineBreak = `<figure class="inline-photo"><img src="${esc(withBase(`/images/${extraImgs[0]}`))}" alt="${esc(post.title)} inspiration" loading="lazy"><figcaption>Clean, vertical storage keeps compact spaces calm and easy to reset daily.</figcaption></figure>`;
+      } else if (idx === 5 && extraImgs[1]) {
+        inlineBreak = `<figure class="inline-photo"><img src="${esc(withBase(`/images/${extraImgs[1]}`))}" alt="${esc(post.categoryLabel)} styling" loading="lazy"><figcaption>Stick to warm neutrals and hidden zones so small rooms feel open.</figcaption></figure>`;
+      }
+
+      return `<section class="pick-item" id="pick-${idx + 1}">
+        <div class="pick-head">
+          <span class="pick-num">No. ${num}</span>
+          ${item.badge ? `<span class="pick-label">${esc(item.badge)}</span>` : ''}
         </div>
         <h2>${esc(item.name)}</h2>
         <p class="pick-why">${esc(item.whyItWorks)}</p>
         <ul class="pick-bullets">${bullets}</ul>
-        <a class="cta-btn" href="${esc(url)}" target="_blank" rel="nofollow sponsored noopener">Check Current Price on Amazon &rarr;</a>
-      </section>`;
+        <a class="cta-link" href="${esc(url)}" target="_blank" rel="nofollow sponsored noopener">Shop on Amazon &#8599;</a>
+      </section>${inlineBreak}`;
     })
     .join('\n');
 
   const faqHtml = (post.faqs || []).length
     ? `<section class="faq-section">
-        <h2>Frequently Asked Questions</h2>
+        <h2>Common Questions</h2>
         ${post.faqs
           .map(
             (f) => `<div class="faq-item">
@@ -131,25 +151,46 @@ const renderPost = (post) => {
       </section>`
     : '';
 
+  const related = allPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const relatedHtml = related.length
+    ? `<section class="related-section">
+        <h2>More Small-Space Guides</h2>
+        <div class="related-grid">
+          ${related
+            .map(
+              (r) => `<article class="card">
+              ${r._imageFile ? `<a class="card-photo-link" href="${esc(withBase(`/posts/${r.slug}/`))}"><img src="${esc(withBase(`/images/${r._imageFile}`))}" alt="${esc(r.title)}" loading="lazy"></a>` : ''}
+              <div class="card-body">
+                <span class="card-cat">${esc(r.categoryLabel || r.category)}</span>
+                <h2 style="font-size:1.12rem;"><a href="${esc(withBase(`/posts/${r.slug}/`))}">${esc(r.title)}</a></h2>
+              </div>
+            </article>`
+            )
+            .join('\n')}
+        </div>
+      </section>`
+    : '';
+
   const heroImg = post._imageFile
-    ? `<figure class="post-hero"><img src="${esc(withBase(`/images/${post._imageFile}`))}" alt="${esc(post.title)}" loading="eager"></figure>`
+    ? `<figure class="post-hero"><img src="${esc(withBase(`/images/${post._imageFile}`))}" alt="${esc(post.title)}" loading="eager"><figcaption>${esc(post.categoryLabel || 'Small-Space Living')} — curated practical picks for everyday rentals.</figcaption></figure>`
     : '';
 
   const body = `<article class="article-wrap">
     <div class="post-header">
-      <span class="badge">${esc(post.categoryLabel || post.category)}</span>
+      <div class="kicker">${esc(post.categoryLabel || post.category)}</div>
       <h1>${esc(post.title)}</h1>
-      <div class="post-meta">Updated ${esc(post.updatedAt)} &middot; ${post.items.length} Practical Picks</div>
+      <div class="byline"><span>By <strong>NeatNook Editorial</strong></span> &middot; <span>Updated ${esc(post.updatedAt)}</span> &middot; <span>${post.items.length} curated picks</span></div>
     </div>
     ${heroImg}
-    <div class="disclosure-bar">${esc(config.disclosureShort)}</div>
-    <p>${esc(post.intro)}</p>
+    <p class="disclosure-note">${esc(config.disclosureShort)}</p>
+    <p class="lead-intro">${esc(post.intro)}</p>
     <div class="toc">
-      <h3>Quick Jump</h3>
+      <h3>In This Guide</h3>
       <ol>${tocItems}</ol>
     </div>
-    ${pickCards}
+    ${pickSections}
     ${faqHtml}
+    ${relatedHtml}
   </article>`;
 
   return layout({
@@ -163,33 +204,27 @@ const renderPost = (post) => {
 };
 
 const renderHome = (posts) => {
-  const palettes = [
-    'linear-gradient(135deg, #3f6154, #284138)',
-    'linear-gradient(135deg, #b85d3b, #873e24)',
-    'linear-gradient(135deg, #5f5b52, #383530)',
-    'linear-gradient(135deg, #4b6584, #2e4259)'
-  ];
-
   const cards = posts
     .map(
-      (p, i) => {
-        const bgStyle = p._imageFile
-          ? `background-image:url('${esc(withBase(`/images/${p._imageFile}`))}')`
-          : `background:${palettes[i % palettes.length]}`;
-        return `<article class="card">
-        <div class="card-cover" style="${bgStyle}"><span>${esc(p.categoryLabel || p.category)}</span></div>
+      (p) => `<article class="card">
+        ${
+          p._imageFile
+            ? `<a class="card-photo-link" href="${esc(withBase(`/posts/${p.slug}/`))}"><img src="${esc(withBase(`/images/${p._imageFile}`))}" alt="${esc(p.title)}" loading="lazy"></a>`
+            : ''
+        }
         <div class="card-body">
+          <span class="card-cat">${esc(p.categoryLabel || p.category)}</span>
           <h2><a href="${esc(withBase(`/posts/${p.slug}/`))}">${esc(p.title)}</a></h2>
           <p>${esc(p.metaDescription)}</p>
-          <div class="card-meta">${p.items.length} curated picks &middot; Updated ${esc(p.updatedAt)}</div>
+          <div class="card-meta">${p.items.length} picks &middot; ${esc(p.updatedAt)}</div>
         </div>
-      </article>`;
-      }
+      </article>`
     )
     .join('\n');
 
   const body = `<section class="wrap hero">
-    <h1>Clutter-Free Living for Small Spaces</h1>
+    <div class="hero-kicker">Small-Space Living &amp; Organization</div>
+    <h1>Practical storage ideas for calm, clutter-free apartments.</h1>
     <p>${esc(config.description)}</p>
   </section>
   <section class="wrap">
@@ -224,10 +259,13 @@ const posts = fs.existsSync(postsDir)
       .filter((f) => f.endsWith('.json'))
       .map((f) => {
         const post = JSON.parse(fs.readFileSync(path.join(postsDir, f), 'utf8'));
-        const img = findPostImage(post.slug);
-        if (img) {
-          fs.copyFileSync(img.src, path.join(distImgDir, img.filename));
-          post._imageFile = img.filename;
+        const imgs = findPostImages(post.slug);
+        if (imgs.length) {
+          for (const im of imgs) {
+            fs.copyFileSync(im.src, path.join(distImgDir, im.filename));
+          }
+          post._imageFile = imgs[0].filename;
+          post._extraImages = imgs.slice(1).map((im) => im.filename);
         }
         return post;
       })
@@ -239,7 +277,7 @@ fs.writeFileSync(path.join(distDir, 'index.html'), renderHome(posts), 'utf8');
 for (const post of posts) {
   const dir = path.join(distDir, 'posts', post.slug);
   ensureDir(dir);
-  fs.writeFileSync(path.join(dir, 'index.html'), renderPost(post), 'utf8');
+  fs.writeFileSync(path.join(dir, 'index.html'), renderPost(post, posts), 'utf8');
 }
 
 // Redirect alias for scheduled Pin 4 slug
@@ -296,4 +334,4 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
 fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8');
 fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`, 'utf8');
 
-console.log(`Built ${posts.length} posts and ${staticPages.length} static pages into ${distDir}`);
+console.log(`Built ${posts.length} editorial posts and ${staticPages.length} static pages into ${distDir}`);
