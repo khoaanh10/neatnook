@@ -73,6 +73,7 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap" rel="stylesheet">
+  <link rel="alternate" type="application/rss+xml" title="${esc(config.siteName)} RSS Feed" href="${esc(withBase('/rss.xml'))}">
   <link rel="stylesheet" href="${esc(withBase(`/styles.css?v=${cssVersion}`))}">
 </head>
 <body>
@@ -346,4 +347,32 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
 fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8');
 fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`, 'utf8');
 
-console.log(`Built ${posts.length} editorial posts and ${staticPages.length} static pages into ${distDir}`);
+const rssItems = posts
+  .map((p) => {
+    const link = `${base}/posts/${p.slug}/`;
+    const imgUrl = p._imageFile ? `${base}/images/${p._imageFile}` : '';
+    const pubDate = new Date(`${p.updatedAt || '2026-11-25'}T09:00:00Z`).toUTCString();
+    return `  <item>
+    <title>${esc(p.title)}</title>
+    <link>${esc(link)}</link>
+    <guid isPermaLink="true">${esc(link)}</guid>
+    <pubDate>${pubDate}</pubDate>
+    <description>${esc(p.metaDescription)}</description>${imgUrl ? `\n    <media:content url="${esc(imgUrl)}" medium="image"/>` : ''}
+  </item>`;
+  })
+  .join('\n');
+
+const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+  <title>${esc(config.siteName)} — ${esc(config.tagline)}</title>
+  <link>${esc(base)}/</link>
+  <description>${esc(config.description)}</description>
+  <language>en-us</language>
+${rssItems}
+</channel>
+</rss>
+`;
+fs.writeFileSync(path.join(distDir, 'rss.xml'), rssXml, 'utf8');
+
+console.log(`Built ${posts.length} editorial posts, rss.xml, and ${staticPages.length} static pages into ${distDir}`);

@@ -76,3 +76,15 @@ Không ôm hết cùng lúc — mở dần từng tầng khi đạt đúng mốc
 5. **Tầng 5 — Gom Email & Mở rộng kênh traffic miễn phí (Tháng 4–6)**:
    - Tặng checklist miễn phí để gom danh sách email → gửi bản tin tuần tự động qua **beehiiv** (ăn thêm affiliate + beehiiv Ad Network).
    - Khai thác thêm **Google SEO** (`sitemap.xml` + FAQ sẵn có), **Flipboard**, và **Facebook Page tiếng Anh**.
+
+---
+
+## 5. Ma trận nhân bản kênh phân phối (1 bộ nội dung → 5 nguồn traffic Mỹ)
+
+Không viết lại nội dung — dùng chung 100% bài viết + bộ ảnh Pin dọc 1000×1500px của NeatNook:
+
+1. **Pinterest (`@neatnookguide`) — Kênh chủ lực**: 3–5 Pin/ngày (Tháng 1) → 10–15 Pin/ngày (Tháng 2+).
+2. **Flipboard Magazine (Tự động 100% qua RSS)**: Nối thẳng `https://khoaanh10.github.io/neatnook/rss.xml` vào Flipboard Magazine *"NeatNook — Small Space Living"* để tự kéo bài mới mỗi lần build.
+3. **Google Search Console & Bing Webmaster Tools**: Nộp `https://khoaanh10.github.io/neatnook/sitemap.xml` 1 lần để lập chỉ mục Google Search & Google Images tự nhiên.
+4. **Lemon8 (Mỹ — Tuần 2–3)**: Đăng chéo đúng bộ ảnh Pin dọc 1000×1500px (ngách Home Organization rất hợp Lemon8).
+5. **Facebook Page tiếng Anh (Tuần 2–3)**: Đăng ảnh dọc có chữ + để link bài ở comment đầu tiên (vừa kéo traffic về web, vừa bật kiếm tiền lượt xem Facebook Content Monetization).
