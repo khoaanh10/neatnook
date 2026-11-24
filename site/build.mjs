@@ -242,6 +242,16 @@ for (const post of posts) {
   fs.writeFileSync(path.join(dir, 'index.html'), renderPost(post), 'utf8');
 }
 
+// Redirect alias for scheduled Pin 4 slug
+const aliasDir = path.join(distDir, 'posts', 'bathroom-vanity-organizer-aesthetic-ideas');
+ensureDir(aliasDir);
+const targetUrl = withBase('/posts/small-bathroom-vanity-counter-organizers/');
+fs.writeFileSync(
+  path.join(aliasDir, 'index.html'),
+  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${esc(targetUrl)}"><link rel="canonical" href="${esc(config.baseUrl.replace(/\/$/, '') + '/posts/small-bathroom-vanity-counter-organizers/')}"></head><body><a href="${esc(targetUrl)}">Redirecting...</a></body></html>`,
+  'utf8'
+);
+
 const staticPages = [
   {
     slug: 'about',
