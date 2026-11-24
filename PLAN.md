@@ -70,8 +70,9 @@ Không ôm hết cùng lúc — mở dần từng tầng khi đạt đúng mốc
    - Khi đạt **≥ 10.000 phiên/tháng** → nâng cấp lên **Journey by Mediavine** (RPM ngách Home Mỹ ~15–30 USD / 1.000 lượt xem).
 3. **Tầng 3 — Mạng Affiliate biên cao hơn (Tháng 3–4)**:
    - Đăng ký qua **Impact.com / Awin / CJ Affiliate** để gắn thêm **Wayfair, Target, The Container Store, Etsy** (đơn \$100–\$400, hoa hồng 5–10%).
-4. **Tầng 4 — Sản phẩm số PDF \$7–\$12 (Tháng 4+)**:
-   - AI tạo bộ **Printable Pantry/Fridge Labels + 30-Day Home Reset Checklist** bán qua **Lemon Squeezy / Gumroad** ngay trong các bài viết liên quan (biên lợi nhuận ~95%).
+4. **Tầng 4 — Sản phẩm số PDF \$5–\$9 (Đã mở bán sớm!)**:
+   - Đã tạo và mở bán bộ **The January Apartment Reset Kit + 72 Minimalist Pantry & Fridge Labels (\$5)** trên Gumroad (`https://khoaanh4.gumroad.com/l/aqhxc`), gắn khung mua vào tất cả bài viết trên web.
+   - **Quy tắc đăng Pin cho Gumroad**: Chỉ đăng **1–2 Pin/tuần** trỏ thẳng về link Gumroad (đổi góc thiết kế khác nhau mỗi lần: nhãn tủ bếp, lịch 30 ngày, bảng đo tủ); **90% Pin còn lại** vẫn trỏ về các bài viết trên web NeatNook để tránh spam và tối ưu tỷ lệ chuyển đổi tự nhiên.
 5. **Tầng 5 — Gom Email & Mở rộng kênh traffic miễn phí (Tháng 4–6)**:
    - Tặng checklist miễn phí để gom danh sách email → gửi bản tin tuần tự động qua **beehiiv** (ăn thêm affiliate + beehiiv Ad Network).
    - Khai thác thêm **Google SEO** (`sitemap.xml` + FAQ sẵn có), **Flipboard**, và **Facebook Page tiếng Anh**.
