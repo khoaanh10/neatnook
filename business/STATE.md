@@ -11,6 +11,8 @@ Cập nhật: 2026-11-25
 - **Repo GitHub**: https://github.com/khoaanh10/neatnook
 - **Pinterest Business**: `NeatNook` (`https://www.pinterest.com/neatnookguide/`) — Đã Claim Website + Avatar + Bio SEO + 8/8 Board công khai
 - **Pinterest Developers App**: `NeatNook Pin Publisher` (`App ID: 1644049`, https://developers.pinterest.com/apps/1644049/) — Đang chờ duyệt `Trial access`
+- **Google Search Console**: Đã xác minh `https://khoaanh10.github.io/neatnook/` & nộp `sitemap.xml`
+- **Flipboard Magazine**: https://flipboard.com/@anhnguynkhoa/neatnook-small-space-living-9c9ekldgy (đã đăng 3 bài đầu tiên)
 - **Kho nội dung**: **10 bài viết** · **50 ảnh Pin dọc 1000×1500px** (ảnh AI + 20 ảnh chụp thật Unsplash, đã ẩn `github.io` trên ảnh)
 - **Pin đã đăng & hẹn lịch (9 Pin phủ đều 8 Board)**:
   - **25/11 (Đã đăng live — 3 Pin)**: Kitchen Under-Sink · Minimalist Desk Cables · No-Drill Bathroom

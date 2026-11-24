@@ -43,17 +43,23 @@
 
 ## 3. Lộ trình 30 ngày đầu & Tiêu chí Go / No-Go
 
-- **Tuần 1 (Thiết lập hạ tầng)**:
-  - AI dựng xong Static Site (`site/`), Pin Factory (`pin-factory/`), và 3 bài mẫu + 15 ảnh Pin đầu tiên.
-  - Owner chọn & mua 1 tên miền `.com` (~10 USD/năm), mở tài khoản Pinterest Business, Claim Website, tạo 8 Board trên.
-- **Tuần 2 (Phủ nội dung nền)**:
-  - AI sản xuất đủ **20 bài Listicle chuẩn SEO** + **100 ảnh Pin** (5 Pin/bài).
-  - Bắt đầu đăng đều **3–5 Pin/ngày** (giãn cách trong ngày).
+- **Tuần 1 (Thiết lập hạ tầng — ✅ ĐÃ HOÀN TẤT 25/11/2026, chi phí \$0)**:
+  - [x] Web tĩnh giao diện tạp chí (`Newsreader` + 3 ảnh thật/bài + `rss.xml` + `sitemap.xml`) live HTTPS trọn đời tại `https://khoaanh10.github.io/neatnook/` (repo `khoaanh10/neatnook`, bản dự phòng VPS `107.175.51.106:8090`).
+  - [x] **10 bài viết** đón sóng January Reset + **20 ảnh chụp thật Unsplash** + **50 ảnh Pin dọc 1000×1500px** (ẩn `github.io` trên ảnh).
+  - [x] Tài khoản **Pinterest Business `@neatnookguide`** + Avatar + Bio SEO + **Claim Website** + **8/8 Board** + **3 Pin live + 7 Pin đã hẹn lịch (26–28/11)**.
+  - [x] Đăng ký **Pinterest Developers App `1644049`** (đang chờ duyệt `Trial access` → sau đó nâng `Standard` chạy cron VPS).
+  - [x] Tạo & mở bán **Gumroad \$5 PDF Kit** (`https://khoaanh4.gumroad.com/l/aqhxc`, đã nối TPBank) + gắn khung mua vào 10 bài trên web + hẹn lịch Pin riêng ngày 28/11.
+  - [x] Cài **cron báo cáo Email 08:00 sáng** trên VPS gửi về `khoaanh15111997@gmail.com` (chờ gắn `PINTEREST_READ_TOKEN`).
+  - [x] Xác minh **Google Search Console** + nộp `sitemap.xml` · Mở **Flipboard Magazine** (`https://flipboard.com/@anhnguynkhoa/neatnook-small-space-living-9c9ekldgy`) với 3 bài đầu.
+- **Tuần 2 (Phủ nội dung nền — Bắt đầu từ tối 27/11)**:
+  - [ ] Hẹn lịch tiếp **9 Pin cho 28–30/11** từ 40 Pin còn lại trong kho.
+  - [ ] Viết thêm **10 bài mới** (tổng 20 bài / 100 Pin) + kéo thêm ảnh Unsplash thật.
+  - [ ] Gắn `PINTEREST_READ_TOKEN` (khi duyệt Trial) và xin nâng **`Standard access`** để VPS tự đăng 24/7.
 - **Tuần 3–4 (Tăng tốc & Đo lường)**:
-  - Thêm 10 bài mới (tổng 30 bài) + nâng tốc độ lên **8–10 Pin/ngày**.
-  - Kiểm tra Pinterest Analytics: chọn Top 3 Board có Outbound Clicks cao nhất để AI nhân bản gấp đôi nội dung.
+  - [ ] Nâng tốc độ lên **8–10 Pin/ngày** + thêm bài mới dựa trên Top 3 Board có Outbound Clicks cao nhất.
+  - [ ] (Tùy chọn) Nhân bản bộ ảnh Pin sang **Lemon8** & **Facebook Page tiếng Anh**.
 - **Cổng quyết định (Ngày 45–60)**:
-  - **GO (Đăng ký Amazon Associates)**: Đạt ≥ 20–30 Outbound Clicks/ngày hoặc ≥ 30.000 Impressions/tháng đang tăng đều.
+  - **GO (Mua `.com` + Đăng ký Amazon Associates & AdSense)**: Đạt ≥ 20–30 Outbound Clicks/ngày hoặc ≥ 30.000 Impressions/tháng đang tăng đều.
   - **PIVOT (Điều chỉnh ngách/thiết kế Pin)**: Nếu sau 60 ngày và > 250 Pin mà Impressions < 5.000/tháng → đổi bộ template Pin & từ khóa ngách.
 
 ---
