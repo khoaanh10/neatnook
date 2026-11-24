@@ -177,6 +177,15 @@ const renderPost = (post, allPosts) => {
     ? `<figure class="post-hero"><img src="${esc(withBase(`/images/${post._imageFile}`))}" alt="${esc(post.title)}" loading="eager"><figcaption>${esc(post.categoryLabel || 'Small-Space Living')} — curated practical picks for everyday rentals.</figcaption></figure>`
     : '';
 
+  const kitBox = config.gumroadKitUrl
+    ? `<aside class="kit-callout">
+        <div class="kit-kicker">NeatNook Printable Edition &middot; $5 Instant Download</div>
+        <h3>The January Apartment Reset Kit + 72 Minimalist Labels</h3>
+        <p>Want a step-by-step printable plan? Grab our 12-page US Letter PDF with a 30-day 15-minute declutter calendar, room checklists, cabinet measuring card, and 72 minimalist pantry &amp; fridge labels.</p>
+        <a class="cta-link" href="${esc(config.gumroadKitUrl)}" target="_blank" rel="noopener">Get the Printable Kit ($5) &#8599;</a>
+      </aside>`
+    : '';
+
   const body = `<article class="article-wrap">
     <div class="post-header">
       <div class="kicker">${esc(post.categoryLabel || post.category)}</div>
@@ -191,6 +200,7 @@ const renderPost = (post, allPosts) => {
       <ol>${tocItems}</ol>
     </div>
     ${pickSections}
+    ${kitBox}
     ${faqHtml}
     ${relatedHtml}
   </article>`;
