@@ -22,7 +22,7 @@
 2. **Không spam tốc độ cao**:
    - Tuần 1–4: **3–5 Pin mới/ngày**, giãn đều khung giờ.
    - Từ tháng 2: **10–15 Pin mới/ngày**, không lặp lại cùng 1 ảnh, không trỏ quá nhiều Pin về cùng 1 URL trong 24h.
-3. **Đa dạng mẫu Pin**: Mỗi 1 bài viết sinh **5 mẫu Pin dọc (1000×1500px)** khác nhau về bố cục, màu nền và tiêu đề móc câu.
+3. **Đa dạng mẫu Pin**: Mỗi 1 bài viết sinh **5 mẫu Pin dọc (1000×1500px)** khác nhau về bố cục, màu nền và tiêu đề móc câu. **Không in địa chỉ web (`github.io`) lên ảnh Pin** — chỉ hiện tên thương hiệu `NEATNOOK`, chờ khi có tên miền `.com` riêng mới bật `"showDomainOnPins": true` trong `site.config.json`.
 
 ---
 

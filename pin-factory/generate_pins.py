@@ -129,7 +129,11 @@ def render_photo_pin(post: dict, variant_idx: int, bg_path: Path, out_path: Path
     variants = post.get("pinHooks") or [post["title"]]
     headline = variants[variant_idx % len(variants)]
     cat_text = (post.get("categoryLabel") or post.get("category") or "ORGANIZATION").upper()
-    brand_domain = SITE_CONFIG["baseUrl"].replace("https://", "").replace("http://", "").rstrip("/")
+    brand_footer = (
+        SITE_CONFIG["baseUrl"].replace("https://", "").replace("http://", "").rstrip("/")
+        if SITE_CONFIG.get("showDomainOnPins")
+        else SITE_CONFIG["siteName"].upper()
+    )
 
     style = variant_idx % 3
     if style == 0:
@@ -157,8 +161,8 @@ def render_photo_pin(post: dict, variant_idx: int, bg_path: Path, out_path: Path
         draw.text(((W - (cb[2] - cb[0])) // 2, card_bot - 122), cta_t, font=f_cta, fill="#FFFFFF")
 
         f_dom = load_font("regular", 24)
-        db = draw.textbbox((0, 0), brand_domain, font=f_dom)
-        draw.text(((W - (db[2] - db[0])) // 2, card_bot - 46), brand_domain, font=f_dom, fill="#625D56")
+        db = draw.textbbox((0, 0), brand_footer, font=f_dom)
+        draw.text(((W - (db[2] - db[0])) // 2, card_bot - 46), brand_footer, font=f_dom, fill="#625D56")
 
     elif style == 1:
         # Bottom dark editorial gradient band
@@ -178,7 +182,7 @@ def render_photo_pin(post: dict, variant_idx: int, bg_path: Path, out_path: Path
         draw_wrapped(draw, headline, f_title, 72, 945, max_chars=22, fill="#FFFFFF", line_spacing=1.18)
 
         f_dom = load_font("regular", 26)
-        draw.text((72, H - 78), f"READ THE FULL GUIDE  |  {brand_domain}", font=f_dom, fill="#E5DFD6")
+        draw.text((72, H - 78), f"READ THE FULL GUIDE  |  {brand_footer}", font=f_dom, fill="#E5DFD6")
 
     else:
         # Top cream header banner + full photo below
@@ -256,9 +260,13 @@ def render_checklist_pin(post: dict, variant_idx: int, out_path: Path):
     draw.text(((W - (cb[2] - cb[0])) // 2, cta_y + 22), cta_text, font=f_cta, fill="#FFFFFF")
 
     f_brand = load_font("regular", 24)
-    brand_domain = SITE_CONFIG["baseUrl"].replace("https://", "").replace("http://", "").rstrip("/")
-    bb = draw.textbbox((0, 0), brand_domain, font=f_brand)
-    draw.text(((W - (bb[2] - bb[0])) // 2, H - pad - 56), brand_domain, font=f_brand, fill=theme["muted"])
+    brand_footer = (
+        SITE_CONFIG["baseUrl"].replace("https://", "").replace("http://", "").rstrip("/")
+        if SITE_CONFIG.get("showDomainOnPins")
+        else SITE_CONFIG["siteName"].upper()
+    )
+    bb = draw.textbbox((0, 0), brand_footer, font=f_brand)
+    draw.text(((W - (bb[2] - bb[0])) // 2, H - pad - 56), brand_footer, font=f_brand, fill=theme["muted"])
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(out_path, "PNG", optimize=True)
