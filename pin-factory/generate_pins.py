@@ -105,14 +105,17 @@ THEMES = [
 ]
 
 
-def find_background(slug: str):
+def find_backgrounds(slug: str):
     if not BG_DIR.exists():
-        return None
-    for ext in (".png", ".jpg", ".jpeg", ".webp"):
-        cand = BG_DIR / f"{slug}{ext}"
-        if cand.exists():
-            return cand
-    return None
+        return []
+    found = []
+    for suffix in ("", "-2", "-3", "-4"):
+        for ext in (".png", ".jpg", ".jpeg", ".webp"):
+            cand = BG_DIR / f"{slug}{suffix}{ext}"
+            if cand.exists():
+                found.append(cand)
+                break
+    return found
 
 
 def render_photo_pin(post: dict, variant_idx: int, bg_path: Path, out_path: Path):
@@ -270,13 +273,14 @@ def main():
         post = json.loads(post_file.read_text(encoding="utf-8"))
         slug = post["slug"]
         hooks = post.get("pinHooks") or [post["title"]]
-        bg_path = find_background(slug)
+        bgs = find_backgrounds(slug)
 
         for i in range(5):
             pin_path = OUT_DIR / slug / f"pin-{i + 1}.png"
-            # Mix: 3 Photo-Backed Pins + 2 Checklist Pins when a background photo exists
-            if bg_path and i < 3:
-                render_photo_pin(post, i, bg_path, pin_path)
+            # Mix: 3 Photo-Backed Pins (using distinct backgrounds when -2/-3 exist) + 2 Checklist Pins
+            if bgs and i < 3:
+                bg_for_pin = bgs[i % len(bgs)]
+                render_photo_pin(post, i, bg_for_pin, pin_path)
                 pin_style = f"photo_{i + 1}"
             else:
                 render_checklist_pin(post, i, pin_path)
