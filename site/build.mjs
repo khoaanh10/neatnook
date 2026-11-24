@@ -25,6 +25,9 @@ const buildAmazonUrl = (item) => {
   return `https://www.amazon.com/s?k=${q}&tag=${tag}`;
 };
 
+const basePath = (config.basePath || '').replace(/\/$/, '');
+const withBase = (p) => `${basePath}${p.startsWith('/') ? p : '/' + p}`;
+
 const layout = ({ title, description, canonicalPath = '/', body, ogType = 'website' }) => {
   const fullTitle = title === config.siteName ? `${config.siteName} — ${config.tagline}` : `${title} | ${config.siteName}`;
   const canonical = `${config.baseUrl.replace(/\/$/, '')}${canonicalPath}`;
@@ -45,17 +48,17 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <meta property="og:description" content="${esc(description || config.description)}">
   <meta property="og:url" content="${esc(canonical)}">
   <meta property="og:site_name" content="${esc(config.siteName)}">${pinterestMeta}
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="${esc(withBase('/styles.css'))}">
 </head>
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="/">${esc(config.siteName.slice(0, 4))}<span>${esc(config.siteName.slice(4))}</span></a>
+      <a class="brand" href="${esc(withBase('/'))}">${esc(config.siteName.slice(0, 4))}<span>${esc(config.siteName.slice(4))}</span></a>
       <nav class="main-nav">
-        <a href="/">All Guides</a>
-        <a href="/about/">About</a>
-        <a href="/disclosure/">Affiliate Disclosure</a>
-        <a href="/privacy/">Privacy</a>
+        <a href="${esc(withBase('/'))}">All Guides</a>
+        <a href="${esc(withBase('/about/'))}">About</a>
+        <a href="${esc(withBase('/disclosure/'))}">Affiliate Disclosure</a>
+        <a href="${esc(withBase('/privacy/'))}">Privacy</a>
       </nav>
     </div>
   </header>
@@ -65,10 +68,10 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <footer class="site-footer">
     <div class="wrap">
       <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/about/">About</a>
-        <a href="/disclosure/">Affiliate Disclosure</a>
-        <a href="/privacy/">Privacy Policy</a>
+        <a href="${esc(withBase('/'))}">Home</a>
+        <a href="${esc(withBase('/about/'))}">About</a>
+        <a href="${esc(withBase('/disclosure/'))}">Affiliate Disclosure</a>
+        <a href="${esc(withBase('/privacy/'))}">Privacy Policy</a>
       </div>
       <p>${esc(config.disclosureShort)}</p>
       <p>&copy; ${new Date().getFullYear()} ${esc(config.siteName)}. All rights reserved.</p>
@@ -152,7 +155,7 @@ const renderHome = (posts) => {
       (p, i) => `<article class="card">
         <div class="card-cover" style="background:${palettes[i % palettes.length]}">${esc(p.categoryLabel || p.category)}</div>
         <div class="card-body">
-          <h2><a href="/posts/${esc(p.slug)}/">${esc(p.title)}</a></h2>
+          <h2><a href="${esc(withBase(`/posts/${p.slug}/`))}">${esc(p.title)}</a></h2>
           <p>${esc(p.metaDescription)}</p>
           <div class="card-meta">${p.items.length} curated picks &middot; Updated ${esc(p.updatedAt)}</div>
         </div>

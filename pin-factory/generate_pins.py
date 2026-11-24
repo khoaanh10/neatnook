@@ -3,11 +3,12 @@ import json
 import os
 import textwrap
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_CONFIG = json.loads((ROOT / "site" / "site.config.json").read_text(encoding="utf-8"))
 POSTS_DIR = ROOT / "site" / "content" / "posts"
+BG_DIR = Path(__file__).resolve().parent / "backgrounds"
 OUT_DIR = Path(__file__).resolve().parent / "output"
 
 W, H = 1000, 1500
@@ -104,89 +105,148 @@ THEMES = [
 ]
 
 
-def render_pin(post: dict, variant_idx: int, out_path: Path):
+def find_background(slug: str):
+    if not BG_DIR.exists():
+        return None
+    for ext in (".png", ".jpg", ".jpeg", ".webp"):
+        cand = BG_DIR / f"{slug}{ext}"
+        if cand.exists():
+            return cand
+    return None
+
+
+def render_photo_pin(post: dict, variant_idx: int, bg_path: Path, out_path: Path):
+    base = Image.open(bg_path).convert("RGB")
+    base = ImageOps.fit(base, (W, H), method=Image.Resampling.LANCZOS)
+    img = base.convert("RGBA")
+
+    overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    odraw = ImageDraw.Draw(overlay)
+
+    variants = post.get("pinHooks") or [post["title"]]
+    headline = variants[variant_idx % len(variants)]
+    cat_text = (post.get("categoryLabel") or post.get("category") or "ORGANIZATION").upper()
+    brand_domain = SITE_CONFIG["baseUrl"].replace("https://", "").replace("http://", "").rstrip("/")
+
+    style = variant_idx % 3
+    if style == 0:
+        # Center frosted magazine card over photo
+        odraw.rectangle([0, 0, W, H], fill=(20, 18, 16, 48))
+        card_top, card_bot = 430, 1080
+        odraw.rounded_rectangle([68, card_top, W - 68, card_bot], radius=32, fill=(250, 248, 244, 238))
+        img = Image.alpha_composite(img, overlay).convert("RGB")
+        draw = ImageDraw.Draw(img)
+
+        f_pill = load_font("bold", 26)
+        tb = draw.textbbox((0, 0), cat_text, font=f_pill)
+        pw = (tb[2] - tb[0]) + 48
+        px = (W - pw) // 2
+        draw.rounded_rectangle([px, card_top + 48, px + pw, card_top + 102], radius=27, fill="#EFE5DA")
+        draw.text((px + 24, card_top + 60), cat_text, font=f_pill, fill="#B85D3B")
+
+        f_title = load_font("serif_bold", 62)
+        draw_wrapped(draw, headline, f_title, 100, card_top + 140, max_chars=21, fill="#1E1D1B", line_spacing=1.2, align="center")
+
+        draw.rounded_rectangle([240, card_bot - 140, W - 240, card_bot - 66], radius=37, fill="#B85D3B")
+        f_cta = load_font("bold", 28)
+        cta_t = "SEE ALL PICKS  ->"
+        cb = draw.textbbox((0, 0), cta_t, font=f_cta)
+        draw.text(((W - (cb[2] - cb[0])) // 2, card_bot - 122), cta_t, font=f_cta, fill="#FFFFFF")
+
+        f_dom = load_font("regular", 24)
+        db = draw.textbbox((0, 0), brand_domain, font=f_dom)
+        draw.text(((W - (db[2] - db[0])) // 2, card_bot - 46), brand_domain, font=f_dom, fill="#625D56")
+
+    elif style == 1:
+        # Bottom dark editorial gradient band
+        for yy in range(620, H):
+            alpha = int(225 * ((yy - 620) / (H - 620)) ** 1.15)
+            odraw.line([(0, yy), (W, yy)], fill=(20, 22, 20, alpha))
+        img = Image.alpha_composite(img, overlay).convert("RGB")
+        draw = ImageDraw.Draw(img)
+
+        f_pill = load_font("bold", 26)
+        tb = draw.textbbox((0, 0), cat_text, font=f_pill)
+        pw = (tb[2] - tb[0]) + 44
+        draw.rounded_rectangle([72, 860, 72 + pw, 914], radius=27, fill="#B85D3B")
+        draw.text((94, 872), cat_text, font=f_pill, fill="#FFFFFF")
+
+        f_title = load_font("bold", 64)
+        draw_wrapped(draw, headline, f_title, 72, 945, max_chars=22, fill="#FFFFFF", line_spacing=1.18)
+
+        f_dom = load_font("regular", 26)
+        draw.text((72, H - 78), f"READ THE FULL GUIDE  |  {brand_domain}", font=f_dom, fill="#E5DFD6")
+
+    else:
+        # Top cream header banner + full photo below
+        odraw.rectangle([0, 0, W, 520], fill=(247, 243, 236, 245))
+        odraw.rectangle([0, 520, W, 528], fill=(184, 93, 59, 255))
+        odraw.rounded_rectangle([210, H - 120, W - 210, H - 46], radius=37, fill=(30, 29, 27, 225))
+        img = Image.alpha_composite(img, overlay).convert("RGB")
+        draw = ImageDraw.Draw(img)
+
+        f_pill = load_font("bold", 24)
+        tb = draw.textbbox((0, 0), cat_text, font=f_pill)
+        pw = (tb[2] - tb[0]) + 44
+        px = (W - pw) // 2
+        draw.rounded_rectangle([px, 54, px + pw, 104], radius=25, fill="#E3ECE8")
+        draw.text((px + 22, 65), cat_text, font=f_pill, fill="#3F6154")
+
+        f_title = load_font("serif_bold", 62)
+        draw_wrapped(draw, headline, f_title, 80, 134, max_chars=22, fill="#1E1D1B", line_spacing=1.18, align="center")
+
+        f_cta = load_font("bold", 28)
+        cta_t = f"TAP FOR GUIDE  |  {SITE_CONFIG['siteName'].upper()}"
+        cb = draw.textbbox((0, 0), cta_t, font=f_cta)
+        draw.text(((W - (cb[2] - cb[0])) // 2, H - 101), cta_t, font=f_cta, fill="#FFFFFF")
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    img.save(out_path, "PNG", optimize=True)
+
+
+def render_checklist_pin(post: dict, variant_idx: int, out_path: Path):
     theme = THEMES[variant_idx % len(THEMES)]
     img = Image.new("RGB", (W, H), theme["bg"])
     draw = ImageDraw.Draw(img)
 
-    # Outer editorial card
     pad = 64
-    draw.rounded_rectangle(
-        [pad, pad, W - pad, H - pad],
-        radius=36,
-        fill=theme["card"],
-    )
+    draw.rounded_rectangle([pad, pad, W - pad, H - pad], radius=36, fill=theme["card"])
+    draw.rounded_rectangle([pad + 48, pad + 48, pad + 200, pad + 60], radius=6, fill=theme["accent"])
 
-    # Top accent bar
-    draw.rounded_rectangle(
-        [pad + 48, pad + 48, pad + 200, pad + 60],
-        radius=6,
-        fill=theme["accent"],
-    )
-
-    # Category pill
     f_pill = load_font("bold", 26)
     cat_text = (post.get("categoryLabel") or post.get("category") or "ORGANIZATION").upper()
     tb = draw.textbbox((0, 0), cat_text, font=f_pill)
     pw = (tb[2] - tb[0]) + 44
-    draw.rounded_rectangle(
-        [pad + 48, pad + 92, pad + 48 + pw, pad + 146],
-        radius=27,
-        fill=theme["pill_bg"],
-    )
+    draw.rounded_rectangle([pad + 48, pad + 92, pad + 48 + pw, pad + 146], radius=27, fill=theme["pill_bg"])
     draw.text((pad + 70, pad + 104), cat_text, font=f_pill, fill=theme["accent"])
 
-    # Pin headline variant
     variants = post.get("pinHooks") or [post["title"]]
     headline = variants[variant_idx % len(variants)]
-    f_title = load_font("serif_bold" if variant_idx % 2 == 0 else "bold", 68)
-    y = draw_wrapped(
-        draw,
-        headline,
-        f_title,
-        pad + 48,
-        pad + 190,
-        max_chars=20,
-        fill=theme["ink"],
-        line_spacing=1.18,
-    )
+    f_title = load_font("serif_bold" if variant_idx % 2 == 0 else "bold", 66)
+    y = draw_wrapped(draw, headline, f_title, pad + 48, pad + 190, max_chars=20, fill=theme["ink"], line_spacing=1.18)
 
-    # Divider line
     y += 26
     draw.line([(pad + 48, y), (W - pad - 48, y)], fill=theme["pill_bg"], width=4)
     y += 40
 
-    # Top 4 preview picks as scannable checklist
     f_item = load_font("bold", 34)
     f_sub = load_font("regular", 25)
     picks = post.get("items", [])[:4]
     for idx, item in enumerate(picks, start=1):
-        # Number circle
         cx, cy = pad + 72, y + 22
         draw.ellipse([cx - 22, cy - 22, cx + 22, cy + 22], fill=theme["accent"])
         f_num = load_font("bold", 24)
         nb = draw.textbbox((0, 0), str(idx), font=f_num)
-        draw.text(
-            (cx - (nb[2] - nb[0]) // 2, cy - (nb[3] - nb[1]) // 2 - 2),
-            str(idx),
-            font=f_num,
-            fill="#FFFFFF",
-        )
+        draw.text((cx - (nb[2] - nb[0]) // 2, cy - (nb[3] - nb[1]) // 2 - 2), str(idx), font=f_num, fill="#FFFFFF")
         name_short = item["name"] if len(item["name"]) <= 38 else item["name"][:35] + "..."
         draw.text((pad + 112, y), name_short, font=f_item, fill=theme["ink"])
-        badge = item.get("badge", "Space-Saving Pick")
-        draw.text((pad + 112, y + 46), badge, font=f_sub, fill=theme["muted"])
+        draw.text((pad + 112, y + 46), item.get("badge", "Space-Saving Pick"), font=f_sub, fill=theme["muted"])
         y += 116
         if y > H - pad - 240:
             break
 
-    # Bottom CTA pill & brand footer
     cta_y = H - pad - 165
-    draw.rounded_rectangle(
-        [pad + 48, cta_y, W - pad - 48, cta_y + 84],
-        radius=42,
-        fill=theme["accent"],
-    )
+    draw.rounded_rectangle([pad + 48, cta_y, W - pad - 48, cta_y + 84], radius=42, fill=theme["accent"])
     f_cta = load_font("bold", 32)
     cta_text = "TAP TO SEE ALL PICKS  ->"
     cb = draw.textbbox((0, 0), cta_text, font=f_cta)
@@ -210,21 +270,29 @@ def main():
         post = json.loads(post_file.read_text(encoding="utf-8"))
         slug = post["slug"]
         hooks = post.get("pinHooks") or [post["title"]]
-        num_pins = max(5, len(hooks))
+        bg_path = find_background(slug)
 
         for i in range(5):
             pin_path = OUT_DIR / slug / f"pin-{i + 1}.png"
-            render_pin(post, i, pin_path)
+            # Mix: 3 Photo-Backed Pins + 2 Checklist Pins when a background photo exists
+            if bg_path and i < 3:
+                render_photo_pin(post, i, bg_path, pin_path)
+                pin_style = f"photo_{i + 1}"
+            else:
+                render_checklist_pin(post, i, pin_path)
+                pin_style = f"checklist_{i + 1}"
+
             hook = hooks[i % len(hooks)]
             queue.append(
                 {
                     "slug": slug,
                     "pin_index": i + 1,
+                    "pin_style": pin_style,
                     "image_path": str(pin_path),
                     "board": post.get("pinterestBoard", "Small Kitchen Organization Ideas"),
                     "pin_title": hook[:100],
                     "pin_description": f"{post['metaDescription']} Tap to see all {len(post['items'])} renter-friendly picks on {SITE_CONFIG['siteName']}."[:500],
-                    "alt_text": f"{hook} — checklist of practical small-space organization picks",
+                    "alt_text": f"{hook} — visual guide of practical small-space organization picks",
                     "destination_url": f"{base_url}/posts/{slug}/",
                     "status": "ready",
                 }
