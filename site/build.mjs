@@ -53,6 +53,9 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   const pinterestMeta = config.pinterestVerifyMeta
     ? `\n  <meta name="p:domain_verify" content="${esc(config.pinterestVerifyMeta)}">`
     : '';
+  const googleMeta = config.googleVerifyMeta
+    ? `\n  <meta name="google-site-verification" content="${esc(config.googleVerifyMeta)}">`
+    : '';
   const ogImgMeta = ogImage
     ? `\n  <meta property="og:image" content="${esc(ogImage)}">`
     : '';
@@ -69,7 +72,7 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description || config.description)}">
   <meta property="og:url" content="${esc(canonical)}">
-  <meta property="og:site_name" content="${esc(config.siteName)}">${ogImgMeta}${pinterestMeta}
+  <meta property="og:site_name" content="${esc(config.siteName)}">${ogImgMeta}${pinterestMeta}${googleMeta}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap" rel="stylesheet">
