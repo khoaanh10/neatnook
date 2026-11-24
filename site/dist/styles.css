@@ -302,6 +302,55 @@ nav.main-nav a:hover { color: var(--ink); text-decoration: none; }
   font-size: 0.96rem;
 }
 .pick-bullets li { margin: 6px 0; }
+.pick-skip {
+  margin: -10px 0 20px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.quick-table-wrap {
+  margin: 0 0 36px;
+  overflow-x: auto;
+}
+.quick-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.quick-table th {
+  text-align: left;
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 2px solid var(--ink);
+  padding: 10px 12px 10px 0;
+}
+.quick-table td {
+  padding: 12px 12px 12px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.howto-steps {
+  margin: 0 0 40px;
+  padding: 24px 26px;
+  background: var(--tint);
+  border-radius: 4px;
+}
+.howto-steps h2 {
+  font-size: 1.45rem;
+  margin: 0 0 14px;
+}
+.howto-steps ol {
+  margin: 0;
+  padding-left: 20px;
+}
+.howto-steps li {
+  margin: 10px 0;
+  color: var(--body);
+}
 
 .cta-link {
   display: inline-flex;

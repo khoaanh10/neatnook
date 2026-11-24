@@ -130,6 +130,10 @@ const renderPost = (post, allPosts) => {
         inlineBreak = `<figure class="inline-photo"><img src="${esc(withBase(`/images/${extraImgs[1]}`))}" alt="${esc(post.categoryLabel)} styling" loading="lazy"><figcaption>Stick to warm neutrals and hidden zones so small rooms feel open.</figcaption></figure>`;
       }
 
+      const skipHtml = item.skipIf
+        ? `<p class="pick-skip"><strong>Skip if:</strong> ${esc(item.skipIf)}</p>`
+        : '';
+
       return `<section class="pick-item" id="pick-${idx + 1}">
         <div class="pick-head">
           <span class="pick-num">No. ${num}</span>
@@ -138,6 +142,7 @@ const renderPost = (post, allPosts) => {
         <h2>${esc(item.name)}</h2>
         <p class="pick-why">${esc(item.whyItWorks)}</p>
         <ul class="pick-bullets">${bullets}</ul>
+        ${skipHtml}
         <a class="cta-link" href="${esc(url)}" target="_blank" rel="nofollow sponsored noopener">Shop on Amazon &#8599;</a>
       </section>${inlineBreak}`;
     })
@@ -190,6 +195,22 @@ const renderPost = (post, allPosts) => {
       </aside>`
     : '';
 
+  const quickTableHtml = (post.quickTable || []).length
+    ? `<div class="quick-table-wrap"><table class="quick-table">
+        <thead><tr><th>Option</th><th>Best For</th><th>Watch Out</th></tr></thead>
+        <tbody>${post.quickTable
+          .map((r) => `<tr><td><strong>${esc(r.name)}</strong></td><td>${esc(r.bestFor)}</td><td>${esc(r.watchOut || '—')}</td></tr>`)
+          .join('')}</tbody>
+      </table></div>`
+    : '';
+
+  const stepsHtml = (post.steps || []).length
+    ? `<section class="howto-steps">
+        <h2>${esc(post.stepsTitle || 'Step-by-Step Setup')}</h2>
+        <ol>${post.steps.map((s) => `<li><strong>${esc(s.title)}:</strong> ${esc(s.detail)}</li>`).join('')}</ol>
+      </section>`
+    : '';
+
   const body = `<article class="article-wrap">
     <div class="post-header">
       <div class="kicker">${esc(post.categoryLabel || post.category)}</div>
@@ -203,6 +224,8 @@ const renderPost = (post, allPosts) => {
       <h3>In This Guide</h3>
       <ol>${tocItems}</ol>
     </div>
+    ${quickTableHtml}
+    ${stepsHtml}
     ${pickSections}
     ${kitBox}
     ${faqHtml}
