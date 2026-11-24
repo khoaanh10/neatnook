@@ -94,3 +94,19 @@ Không viết lại nội dung — dùng chung 100% bài viết + bộ ảnh Pin
 3. **Google Search Console & Bing Webmaster Tools**: Nộp `https://khoaanh10.github.io/neatnook/sitemap.xml` 1 lần để lập chỉ mục Google Search & Google Images tự nhiên.
 4. **Lemon8 (Mỹ — Tuần 2–3)**: Đăng chéo đúng bộ ảnh Pin dọc 1000×1500px (ngách Home Organization rất hợp Lemon8).
 5. **Facebook Page tiếng Anh (Tuần 2–3)**: Đăng ảnh dọc có chữ + để link bài ở comment đầu tiên (vừa kéo traffic về web, vừa bật kiếm tiền lượt xem Facebook Content Monetization).
+
+---
+
+## 6. Chuẩn viết bài (Từ Tuần 2) & Lệnh chạy nhanh
+
+### Chuẩn 3 dạng bài trộn lẫn (5 bài mới/tuần)
+- **Nguồn**: Pinterest Trends + câu hỏi thật trên Reddit (`r/organization`, `r/ApartmentHacks`, `r/Workspaces`, `r/declutter`) + thông số kích thước & review 2–3 sao thật.
+- **Tỷ lệ mỗi tuần**: 2 bài *How-To từng bước* (`steps`) · 1 bài *So sánh X vs Y* (`quickTable`) · 2 bài *Listicle nâng cao* (`skipIf` kiểu Wirecutter). Cấm văn mẫu AI sáo rỗng.
+
+### Lệnh chạy nhanh (trong `projects/pinterest-org/`)
+```powershell
+python pin-factory/fetch_unsplash_backgrounds.py   # 1. Tải ảnh nền chụp thật Unsplash cho bài mới
+node site/build.mjs                                # 2. Build web tạp chí + sitemap.xml + rss.xml
+python pin-factory/generate_pins.py                # 3. Sinh 5 ảnh Pin/bài (ẩn github.io, 1000x1500)
+node pin-factory/publish_pinterest_api.mjs         # 4. Xem hàng đợi / đăng qua Pinterest API v5
+```
