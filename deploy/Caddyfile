@@ -1,0 +1,11 @@
+__DOMAIN__, www.__DOMAIN__ {
+    root * /var/www/neatnook
+    encode gzip zstd
+    file_server
+
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}

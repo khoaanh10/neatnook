@@ -1,0 +1,16 @@
+{
+  "siteName": "NeatNook",
+  "tagline": "Smart Small-Space, Kitchen & Desk Organization Guides",
+  "description": "Practical, renter-friendly storage ideas and clutter-free organization guides for small kitchens, compact desks, and tiny apartments.",
+  "baseUrl": "https://neatnook.example.com",
+  "amazonTag": "YOUR_AMAZON_TAG-20",
+  "pinterestVerifyMeta": "",
+  "contactEmail": "hello@neatnook.example.com",
+  "disclosureShort": "Disclosure: As an Amazon Associate, we earn from qualifying purchases at no extra cost to you. We only feature practical organization finds we genuinely recommend.",
+  "categories": [
+    { "id": "kitchen", "label": "Small Kitchen" },
+    { "id": "desk", "label": "Desk & Workspace" },
+    { "id": "apartment", "label": "Small Apartment" },
+    { "id": "under-30", "label": "Under $30 Finds" }
+  ]
+}
