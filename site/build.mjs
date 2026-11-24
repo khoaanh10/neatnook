@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'site.config.json'), 'utf8'));
 const postsDir = path.join(__dirname, 'content', 'posts');
+const bgDir = path.join(__dirname, '..', 'pin-factory', 'backgrounds');
 const distDir = path.join(__dirname, 'dist');
+const distImgDir = path.join(distDir, 'images');
 
 const esc = (str = '') =>
   String(str)
@@ -28,11 +30,23 @@ const buildAmazonUrl = (item) => {
 const basePath = (config.basePath || '').replace(/\/$/, '');
 const withBase = (p) => `${basePath}${p.startsWith('/') ? p : '/' + p}`;
 
-const layout = ({ title, description, canonicalPath = '/', body, ogType = 'website' }) => {
+const findPostImage = (slug) => {
+  if (!fs.existsSync(bgDir)) return null;
+  for (const ext of ['.jpg', '.jpeg', '.png', '.webp']) {
+    const p = path.join(bgDir, `${slug}${ext}`);
+    if (fs.existsSync(p)) return { src: p, filename: `${slug}${ext}` };
+  }
+  return null;
+};
+
+const layout = ({ title, description, canonicalPath = '/', body, ogType = 'website', ogImage = '' }) => {
   const fullTitle = title === config.siteName ? `${config.siteName} — ${config.tagline}` : `${title} | ${config.siteName}`;
   const canonical = `${config.baseUrl.replace(/\/$/, '')}${canonicalPath}`;
   const pinterestMeta = config.pinterestVerifyMeta
     ? `\n  <meta name="p:domain_verify" content="${esc(config.pinterestVerifyMeta)}">`
+    : '';
+  const ogImgMeta = ogImage
+    ? `\n  <meta property="og:image" content="${esc(ogImage)}">`
     : '';
 
   return `<!doctype html>
@@ -47,7 +61,7 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description || config.description)}">
   <meta property="og:url" content="${esc(canonical)}">
-  <meta property="og:site_name" content="${esc(config.siteName)}">${pinterestMeta}
+  <meta property="og:site_name" content="${esc(config.siteName)}">${ogImgMeta}${pinterestMeta}
   <link rel="stylesheet" href="${esc(withBase('/styles.css'))}">
 </head>
 <body>
@@ -117,12 +131,17 @@ const renderPost = (post) => {
       </section>`
     : '';
 
+  const heroImg = post._imageFile
+    ? `<figure class="post-hero"><img src="${esc(withBase(`/images/${post._imageFile}`))}" alt="${esc(post.title)}" loading="eager"></figure>`
+    : '';
+
   const body = `<article class="article-wrap">
     <div class="post-header">
       <span class="badge">${esc(post.categoryLabel || post.category)}</span>
       <h1>${esc(post.title)}</h1>
       <div class="post-meta">Updated ${esc(post.updatedAt)} &middot; ${post.items.length} Practical Picks</div>
     </div>
+    ${heroImg}
     <div class="disclosure-bar">${esc(config.disclosureShort)}</div>
     <p>${esc(post.intro)}</p>
     <div class="toc">
@@ -138,7 +157,8 @@ const renderPost = (post) => {
     description: post.metaDescription,
     canonicalPath: `/posts/${post.slug}/`,
     body,
-    ogType: 'article'
+    ogType: 'article',
+    ogImage: post._imageFile ? `${config.baseUrl.replace(/\/$/, '')}/images/${post._imageFile}` : ''
   });
 };
 
@@ -152,14 +172,19 @@ const renderHome = (posts) => {
 
   const cards = posts
     .map(
-      (p, i) => `<article class="card">
-        <div class="card-cover" style="background:${palettes[i % palettes.length]}">${esc(p.categoryLabel || p.category)}</div>
+      (p, i) => {
+        const bgStyle = p._imageFile
+          ? `background-image:url('${esc(withBase(`/images/${p._imageFile}`))}')`
+          : `background:${palettes[i % palettes.length]}`;
+        return `<article class="card">
+        <div class="card-cover" style="${bgStyle}"><span>${esc(p.categoryLabel || p.category)}</span></div>
         <div class="card-body">
           <h2><a href="${esc(withBase(`/posts/${p.slug}/`))}">${esc(p.title)}</a></h2>
           <p>${esc(p.metaDescription)}</p>
           <div class="card-meta">${p.items.length} curated picks &middot; Updated ${esc(p.updatedAt)}</div>
         </div>
-      </article>`
+      </article>`;
+      }
     )
     .join('\n');
 
@@ -190,13 +215,22 @@ const renderStaticPage = (title, slug, paragraphs) => {
 // Clean & build
 fs.rmSync(distDir, { recursive: true, force: true });
 ensureDir(distDir);
+ensureDir(distImgDir);
 fs.copyFileSync(path.join(__dirname, 'styles.css'), path.join(distDir, 'styles.css'));
 
 const posts = fs.existsSync(postsDir)
   ? fs
       .readdirSync(postsDir)
       .filter((f) => f.endsWith('.json'))
-      .map((f) => JSON.parse(fs.readFileSync(path.join(postsDir, f), 'utf8')))
+      .map((f) => {
+        const post = JSON.parse(fs.readFileSync(path.join(postsDir, f), 'utf8'));
+        const img = findPostImage(post.slug);
+        if (img) {
+          fs.copyFileSync(img.src, path.join(distImgDir, img.filename));
+          post._imageFile = img.filename;
+        }
+        return post;
+      })
       .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''))
   : [];
 
