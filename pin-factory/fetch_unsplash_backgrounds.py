@@ -93,14 +93,19 @@ def main():
         slug = post["slug"]
         query = post.get("unsplashQuery") or QUERY_BY_SLUG.get(slug, "minimalist home organization")
 
-        needed = [v for v in (2, 3) if not (BG_DIR / f"{slug}-{v}.jpg").exists()]
+        needed = []
+        if not (BG_DIR / f"{slug}.jpg").exists() and not (BG_DIR / f"{slug}.png").exists():
+            needed.append("")
+        for v in ("-2", "-3"):
+            if not (BG_DIR / f"{slug}{v}.jpg").exists():
+                needed.append(v)
         if not needed:
-            print(f"Skip {slug} (already has -2 and -3)")
+            print(f"Skip {slug} (already has 3 backgrounds)")
             continue
 
-        photos = search_unsplash(query, access_key, per_page=8)
-        for variant in needed:
-            dest = BG_DIR / f"{slug}-{variant}.jpg"
+        photos = search_unsplash(query, access_key, per_page=10)
+        for suffix in needed:
+            dest = BG_DIR / f"{slug}{suffix}.jpg"
             for p in photos:
                 pid = p.get("id")
                 if pid in used_ids:
