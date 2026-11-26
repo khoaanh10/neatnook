@@ -381,41 +381,49 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
 fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8');
 fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`, 'utf8');
 
-const rssItems = posts
-  .map((p) => {
-    const link = `${base}/posts/${p.slug}/`;
-    const imgUrl = p._pinImageFile
-      ? `${base}/pins/${p._pinImageFile}`
-      : p._imageFile
-      ? `${base}/images/${p._imageFile}`
-      : '';
-    const imgType = imgUrl.endsWith('.png') ? 'image/png' : 'image/jpeg';
-    const pubDate = new Date(`${p.updatedAt || '2026-11-25'}T09:00:00Z`).toUTCString();
-    return `  <item>
+const buildRssXml = (list, titleSuffix = '') => {
+  const itemsXml = list
+    .map((p) => {
+      const link = `${base}/posts/${p.slug}/`;
+      const imgUrl = p._pinImageFile
+        ? `${base}/pins/${p._pinImageFile}`
+        : p._imageFile
+        ? `${base}/images/${p._imageFile}`
+        : '';
+      const imgType = imgUrl.endsWith('.png') ? 'image/png' : 'image/jpeg';
+      const pubDate = new Date(`${p.updatedAt || '2026-11-25'}T09:00:00Z`).toUTCString();
+      return `  <item>
     <title>${esc(p.title)}</title>
     <link>${esc(link)}</link>
     <guid isPermaLink="true">${esc(link)}</guid>
     <pubDate>${pubDate}</pubDate>
     <description>${esc(p.metaDescription)}</description>${
-      imgUrl
-        ? `\n    <enclosure url="${esc(imgUrl)}" type="${imgType}" length="0"/>\n    <media:content url="${esc(imgUrl)}" medium="image" type="${imgType}"/>`
-        : ''
-    }
+        imgUrl
+          ? `\n    <enclosure url="${esc(imgUrl)}" type="${imgType}" length="0"/>\n    <media:content url="${esc(imgUrl)}" medium="image" type="${imgType}"/>`
+          : ''
+      }
   </item>`;
-  })
-  .join('\n');
+    })
+    .join('\n');
 
-const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
 <channel>
-  <title>${esc(config.siteName)} — ${esc(config.tagline)}</title>
+  <title>${esc(config.siteName)}${titleSuffix ? ' — ' + esc(titleSuffix) : ' — ' + esc(config.tagline)}</title>
   <link>${esc(base)}/</link>
   <description>${esc(config.description)}</description>
   <language>en-us</language>
-${rssItems}
+${itemsXml}
 </channel>
 </rss>
 `;
-fs.writeFileSync(path.join(distDir, 'rss.xml'), rssXml, 'utf8');
+};
 
-console.log(`Built ${posts.length} editorial posts, rss.xml, and ${staticPages.length} static pages into ${distDir}`);
+fs.writeFileSync(path.join(distDir, 'rss.xml'), buildRssXml(posts), 'utf8');
+
+for (const cat of config.categories || []) {
+  const catPosts = posts.filter((p) => p.category === cat.id);
+  fs.writeFileSync(path.join(distDir, `rss-${cat.id}.xml`), buildRssXml(catPosts, cat.label), 'utf8');
+}
+
+console.log(`Built ${posts.length} editorial posts, rss.xml + ${(config.categories || []).length} category RSS feeds, and ${staticPages.length} static pages into ${distDir}`);
