@@ -6,8 +6,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'site.config.json'), 'utf8'));
 const postsDir = path.join(__dirname, 'content', 'posts');
 const bgDir = path.join(__dirname, '..', 'pin-factory', 'backgrounds');
+const pinOutDir = path.join(__dirname, '..', 'pin-factory', 'output');
 const distDir = path.join(__dirname, 'dist');
 const distImgDir = path.join(distDir, 'images');
+const distPinDir = path.join(distDir, 'pins');
 
 const esc = (str = '') =>
   String(str)
@@ -290,6 +292,7 @@ const renderStaticPage = (title, slug, paragraphs) => {
 fs.rmSync(distDir, { recursive: true, force: true });
 ensureDir(distDir);
 ensureDir(distImgDir);
+ensureDir(distPinDir);
 fs.copyFileSync(path.join(__dirname, 'styles.css'), path.join(distDir, 'styles.css'));
 
 const posts = fs.existsSync(postsDir)
@@ -305,6 +308,11 @@ const posts = fs.existsSync(postsDir)
           }
           post._imageFile = imgs[0].filename;
           post._extraImages = imgs.slice(1).map((im) => im.filename);
+        }
+        const pin1 = path.join(pinOutDir, post.slug, 'pin-1.png');
+        if (fs.existsSync(pin1)) {
+          fs.copyFileSync(pin1, path.join(distPinDir, `${post.slug}-pin-1.png`));
+          post._pinImageFile = `${post.slug}-pin-1.png`;
         }
         return post;
       })
@@ -376,14 +384,23 @@ fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSit
 const rssItems = posts
   .map((p) => {
     const link = `${base}/posts/${p.slug}/`;
-    const imgUrl = p._imageFile ? `${base}/images/${p._imageFile}` : '';
+    const imgUrl = p._pinImageFile
+      ? `${base}/pins/${p._pinImageFile}`
+      : p._imageFile
+      ? `${base}/images/${p._imageFile}`
+      : '';
+    const imgType = imgUrl.endsWith('.png') ? 'image/png' : 'image/jpeg';
     const pubDate = new Date(`${p.updatedAt || '2026-11-25'}T09:00:00Z`).toUTCString();
     return `  <item>
     <title>${esc(p.title)}</title>
     <link>${esc(link)}</link>
     <guid isPermaLink="true">${esc(link)}</guid>
     <pubDate>${pubDate}</pubDate>
-    <description>${esc(p.metaDescription)}</description>${imgUrl ? `\n    <media:content url="${esc(imgUrl)}" medium="image"/>` : ''}
+    <description>${esc(p.metaDescription)}</description>${
+      imgUrl
+        ? `\n    <enclosure url="${esc(imgUrl)}" type="${imgType}" length="0"/>\n    <media:content url="${esc(imgUrl)}" medium="image" type="${imgType}"/>`
+        : ''
+    }
   </item>`;
   })
   .join('\n');
