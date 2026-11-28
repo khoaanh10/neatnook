@@ -61,6 +61,10 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   const ogImgMeta = ogImage
     ? `\n  <meta property="og:image" content="${esc(ogImage)}">`
     : '';
+  const ga4Script = config.ga4MeasurementId
+    ? `\n  <script async src="https://www.googletagmanager.com/gtag/js?id=${esc(config.ga4MeasurementId)}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${esc(config.ga4MeasurementId)}');document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(!a||!a.href)return;if(a.href.indexOf('amazon.com')!==-1){gtag('event','amazon_click',{link_url:a.href,page_path:location.pathname});}else if(a.href.indexOf('gumroad.com')!==-1){gtag('event','gumroad_click',{link_url:a.href,page_path:location.pathname});}});</script>`
+    : '';
 
   return `<!doctype html>
 <html lang="en">
@@ -74,7 +78,7 @@ const layout = ({ title, description, canonicalPath = '/', body, ogType = 'websi
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description || config.description)}">
   <meta property="og:url" content="${esc(canonical)}">
-  <meta property="og:site_name" content="${esc(config.siteName)}">${ogImgMeta}${pinterestMeta}${googleMeta}
+  <meta property="og:site_name" content="${esc(config.siteName)}">${ogImgMeta}${pinterestMeta}${googleMeta}${ga4Script}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&display=swap" rel="stylesheet">
