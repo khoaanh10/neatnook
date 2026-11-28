@@ -389,6 +389,9 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   .join('\n')}\n</urlset>\n`;
 fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8');
 fs.writeFileSync(path.join(distDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${base}/sitemap.xml\n`, 'utf8');
+if (config.customDomain) {
+  fs.writeFileSync(path.join(distDir, 'CNAME'), `${config.customDomain.trim()}\n`, 'utf8');
+}
 
 // Deterministic Daily RSS Drip (3 fresh Pins/day starting 2026-11-27, zero duplicates)
 const DRIP_START = '2026-11-27';
